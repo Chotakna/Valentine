@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #79173e 0%, #ffb3d9 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .image-container {
+            margin-bottom: 30px;
+        }
+
+        .image-container img {
+            width: 300px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 40px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #yesBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #yesBtn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        #yesBtn:active {
+            transform: scale(0.98);
+        }
+
+        #noBtn {
+            background-color: #f44336;
+            color: white;
+            position: relative;
+        }
+
+        #noBtn:hover {
+            background-color: #da190b;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            text-align: center;
+            animation: popupAppear 0.5s ease forwards;
+        }
+
+        @keyframes popupAppear {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .popup h2 {
+            font-size: 48px;
+            color: #f44336;
+            margin-bottom: 20px;
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .popup p {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .popup button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .popup button:hover {
+            background-color: #45a049;
+        }
+
+        .hearts {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .heart {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            animation: float 2s ease-in forwards;
+        }
+
+        @keyframes float {
+            0% {
+                opacity: 1;
+                transform: translateY(0) translateX(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-200px) translateX(50px);
+            }
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 999;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="container">
+        <div class="image-container">
+    <img src="https://img.pikbest.com/photo/20241119/cute-cat-holding-red-rose_10968489.jpg!w700wp" alt="Cute cat holding a red rose">
+
+
+
+        </div>
+        <h1>Will you be my Valentine?</h1>
+        <div class="button-container">
+            <button id="yesBtn">Yes</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+
+    <div class="popup" id="popup">
+        <h2>See you then! 💕</h2>
+        <p>You Just made my day</p>
+        <button onclick="location.reload()">Close</button>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const popup = document.getElementById('popup');
+        const overlay = document.getElementById('overlay');
+
+        // Make "No" button run away
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('click', moveButton);
+
+        function moveButton() {
+            // Generate random position
+            const randomX = Math.random() * (window.innerWidth - noBtn.offsetWidth - 100) + 50;
+            const randomY = Math.random() * (window.innerHeight - noBtn.offsetHeight - 100) + 50;
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            noBtn.style.zIndex = '100';
+
+            // Slight size increase on escape
+            noBtn.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                noBtn.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // Yes button animation
+        yesBtn.addEventListener('click', function() {
+            // Show popup
+            popup.style.display = 'block';
+            overlay.classList.add('show');
+
+            // Create floating hearts
+            createHearts();
+
+            // Disable interactions
+            noBtn.style.pointerEvents = 'none';
+            yesBtn.style.pointerEvents = 'none';
+        });
+
+        function createHearts() {
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'hearts';
+                    heart.style.left = Math.random() * window.innerWidth + 'px';
+                    heart.style.top = Math.random() * window.innerHeight + 'px';
+                    
+                    const heartEmoji = document.createElement('div');
+                    heartEmoji.className = 'heart';
+                    heartEmoji.textContent = '❤️';
+                    
+                    heart.appendChild(heartEmoji);
+                    document.body.appendChild(heart);
+
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 2000);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+</html>
